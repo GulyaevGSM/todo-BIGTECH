@@ -1,6 +1,6 @@
-import {Theme} from "@/app/providers/ThemeProvider";
-import {useContext} from "react";
-import {LOCAL_STORAGE_THEME_KEY, ThemeContext} from "@/app/providers/ThemeProvider/lib/ThemeContext";
+import { Theme } from "@/app/providers/ThemeProvider";
+import { useContext } from "react";
+import { LOCAL_STORAGE_THEME_KEY, ThemeContext } from "@/app/providers/ThemeProvider/lib/ThemeContext";
 
 interface useThemeResult {
     theme: Theme;
@@ -15,7 +15,7 @@ export const useTheme = (): useThemeResult => {
         throw new Error("useTheme must be used within a ThemeProvider");
     }
 
-    const {theme, setTheme} = context;
+    const { theme, setTheme } = context;
 
     // Обработка случая, когда theme или setTheme могут быть undefined
     if (theme === undefined || setTheme === undefined) {

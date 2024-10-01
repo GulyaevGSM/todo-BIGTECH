@@ -1,6 +1,6 @@
 import path from "path";
-import {BuildEnv, BuildPaths} from "./config/types/types";
-import {buildWebpackConfig} from "./config/build/buildWebpackConfig";
+import { BuildEnv, BuildPaths } from "./config/types/types";
+import { buildWebpackConfig } from "./config/build/buildWebpackConfig";
 import webpack from "webpack";
 
 export default (env: BuildEnv) => {
@@ -24,42 +24,3 @@ export default (env: BuildEnv) => {
 
     return config
 }
-
-// return {
-//     mode,
-//     entry: './src/index.tsx',  // Ваш основной файл, содержащий import/export
-//     output: {
-//         filename: '[name].[contenthash].js',
-//         path: path.resolve(__dirname, 'dist'),
-//         clean: true,
-//     },
-//     resolve: {
-//         extensions: ['.ts', '.tsx', '.js'],  // Поддержка расширений
-//     },
-//     module: {
-//         rules: [
-//             {
-//                 test: /\.tsx?$/,  // Поддержка TypeScript
-//                 use: 'ts-loader',
-//                 exclude: /node_modules/,
-//             },
-//             {
-//                 test: /\.s[ac]ss$/i,
-//                 use: ['style-loader', 'css-loader'],  // Поддержка CSS
-//             },
-//         ],
-//     },
-//     target: 'web',
-//     devServer: {
-//         historyApiFallback: true,
-//         open: true,
-//         port: PORT,
-//         hot: true,
-//     },
-//     plugins: [
-//         new CleanWebpackPlugin(),
-//         new HtmlWebpackPlugin({
-//             template: './public/index.html',  // HTML шаблон
-//         }),
-//     ],
-// }

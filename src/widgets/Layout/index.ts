@@ -1,4 +1,4 @@
-import {Layout} from "@/widgets/Layout/ui/Layout";
+import { Layout } from "@/widgets/Layout/ui/Layout";
 
 export {
     Layout

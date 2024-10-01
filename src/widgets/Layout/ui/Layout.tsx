@@ -1,8 +1,8 @@
-import {Suspense} from "react";
-import {Outlet} from "react-router-dom";
-import {Sidebar} from "@/widgets/Sidebar";
-import {Navbar} from "@/widgets/Navbar";
-import {PageLoader} from "@/widgets/PageLoader/ui/PageLoader";
+import { Suspense } from "react";
+import { Outlet } from "react-router-dom";
+import { Sidebar } from "@/widgets/Sidebar";
+import { Navbar } from "@/widgets/Navbar";
+import { PageLoader } from "@/widgets/PageLoader/ui/PageLoader";
 
 export function Layout() {
     return (

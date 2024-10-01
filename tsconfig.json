@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./src",  // Указываем, что корень для абсолютных путей — папка src
+    "paths": {
+      "@/*": ["*"]  // Соответствует пути "@/..." к любому файлу внутри src
+    },
+    "target": "ES5",
+    // Целевой стандарт ECMAScript для компиляции
+    "module": "ESNext",
+    // Используем модульную систему ESNext (для совместимости с Webpack)
+    "lib": ["DOM", "ES6", "ES2017"],
+    // Библиотеки, которые подключаются (ES6+, DOM API)
+    "jsx": "react-jsx",
+    // Поддержка JSX (если используете React)
+    "moduleResolution": "node",
+    // Модульная система, используемая для разрешения модулей
+    "esModuleInterop": true,
+    // Разрешение совместимости с CommonJS
+    "forceConsistentCasingInFileNames": true,
+    // Принуждение к единообразию регистра в именах файлов
+    "strict": true,
+    // Включение строгих проверок типов
+    "skipLibCheck": true,
+    // Пропуск проверки типов библиотек
+    "allowSyntheticDefaultImports": true,
+    // Позволяет использовать синтетический импорт по умолчанию
+    "resolveJsonModule": true,
+    // Поддержка импорта JSON файлов
+    "sourceMap": true,
+    // Генерация карт исходного кода
+    "outDir": "./dist",
+    // Директория для скомпилированных файлов
+  },
+  "include": ["src", "./config/jest/setupTests.ts", "./src/**/*.ts", "./src/**/*.tsx"],  // Включает все файлы в папке src
+  "exclude": ["node_modules", "dist"],  // Исключает папки
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+}

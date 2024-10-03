@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, ButtonTheme } from "@/shared/ui/Button/Button";
+import { Button, ButtonSize, ButtonTheme } from "@/shared/ui/Button/Button";
 import { useTranslation } from "react-i18next";
 
 const BugButton = () => {
@@ -17,12 +17,12 @@ const BugButton = () => {
     }, [error])
 
     return (
-        <div>
-            <Button
-                theme={ButtonTheme.OUTLINE}
-                onClick={callError}
-            >{t('Вызвать ошибку')}</Button>
-        </div>
+        <Button
+            activeSize
+            size={ButtonSize.M}
+            theme={ButtonTheme.OUTLINE}
+            onClick={callError}
+        >{t('Вызвать ошибку')}</Button>
     );
 };
 

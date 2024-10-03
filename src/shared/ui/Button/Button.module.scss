@@ -2,6 +2,9 @@
   cursor: pointer;
   color: var(--primary-color);
   padding: 6px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   div {
     pointer-events: none;
@@ -20,4 +23,19 @@
   padding: 10px 15px;
   border: 1px solid var(--primary-color);
   color: var(--primary-color);
+}
+
+.activeSize.size_m {
+  width: var(--width-size-m);
+  height: var(--height-size-m);
+}
+
+.activeSize.size_l {
+  width: var(--width-size-l);
+  height: var(--height-size-l);
+}
+
+.activeSize.size_xl {
+  width: var(--width-size-xl);
+  height: var(--height-size-xl);
 }

@@ -1,6 +1,6 @@
 import cls from "./Navbar.module.scss";
 import { classNamesFn } from "@/shared/lib/classNamesFn/classNamesFn";
-import { AppLink } from "@/shared/ui/AppLink/AppLink";
+import { AppLink, MarginNavbar } from "@/shared/ui/AppLink/AppLink";
 import { RoutePath } from "@/shared/config/routeConfig/routeConfig";
 import { ThemeSwitcher } from "@/shared/ui/ThemeSwitcher/ui/ThemeSwitcher";
 import { LangSwitcher } from "@/widgets/LangSwitcher/ui/LangSwitcher";
@@ -23,6 +23,7 @@ export const Navbar = ({ className }: NavbarProps) => {
             </div>
             <div className={cls.links}>
                 <AppLink
+                    navbarFlag={MarginNavbar.marginRight}
                     to={RoutePath.main}
                 >
                     {t('Главная')}

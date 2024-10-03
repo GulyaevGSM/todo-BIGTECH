@@ -5,11 +5,13 @@ import { createBrowserRouter } from 'react-router-dom';
 import { Layout } from "@/widgets/Layout";
 import { ErrorBoundary } from "@/app/providers/ErrorBoundary";
 
+/* eslint-disable no-unused-vars */
 export enum AppRoutes {
     MAIN = 'main',
     ABOUT = 'about',
     NOTFOUND = 'not_found',
 }
+/* eslint-enable no-unused-vars */
 
 export const RoutePath: Record<AppRoutes, string> = {
     [AppRoutes.MAIN]: '/',

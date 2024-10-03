@@ -1,13 +1,16 @@
 import { createContext } from "react";
 
+/* eslint-disable no-unused-vars */
 export enum Theme {
     LIGHT = 'app_light_theme',
     DARK = 'app_dark_theme',
 }
+/* eslint-enable no-unused-vars */
 
 export interface ThemeContextProps {
     theme?: Theme;
-    setTheme?: (theme: Theme) => void;
+    setTheme?: (_theme: Theme) => void;
+    //TODO на 12 строке было без нижнего подчеркивания.[theme]
 }
 
 export const ThemeContext = createContext<ThemeContextProps>({})

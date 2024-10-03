@@ -3,7 +3,9 @@ import { classNamesFn } from "@/shared/lib/classNamesFn/classNamesFn";
 import { ButtonHTMLAttributes, FC, ReactNode } from "react";
 
 export enum ButtonTheme {
+    // eslint-disable-next-line no-unused-vars
     CLEAR = "clear",
+    // eslint-disable-next-line no-unused-vars
     OUTLINE = "outline",
 }
 

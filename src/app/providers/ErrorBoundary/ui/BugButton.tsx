@@ -19,6 +19,7 @@ const BugButton = () => {
     return (
         <div>
             <Button
+                theme={ButtonTheme.OUTLINE}
                 onClick={callError}
             >{t('Вызвать ошибку')}</Button>
         </div>

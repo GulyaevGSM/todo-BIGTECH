@@ -21,7 +21,6 @@ interface InputProps {
     ref?: Ref<HTMLInputElement>;
 }
 
-// eslint-disable-next-line react/display-name
 export const Input = forwardRef<HTMLInputElement, InputProps>(({ className, placeholder = 'Поиск', size = InputSize.M }, ref) => {
     const { t } = useTranslation()
 

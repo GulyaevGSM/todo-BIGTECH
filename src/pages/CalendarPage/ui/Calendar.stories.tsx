@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ThemeDecorator } from "@/shared/config/storybook/ThemeDecorator/ThemeDecorator";
 import { Theme } from "@/app/providers/ThemeProvider";
-import { CalendarPage } from "@/pages/CalendarPage";
+import CalendarPage from "@/pages/CalendarPage/ui/CalendarPage";
 
 const meta = {
     title: 'pages/CalendarPage',

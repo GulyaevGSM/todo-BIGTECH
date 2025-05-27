@@ -1,0 +1,451 @@
+# ProxySwither
+
+Универсальный инструмент для переключения между различными средами и серверами во время frontend разработки с автоматической авторизацией и управлением сессиями.
+
+## Что это такое
+
+ProxySwither решает критическую проблему frontend разработчиков: необходимость работы с множественными backend средами (dev, test, staging, prod) без постоянной ручной настройки прокси и авторизации.
+
+### Проблемы, которые решает
+
+**🔄 Переключение между средами**
+
+- Ручная настройка прокси для каждой среды занимает время
+- Необходимость помнить URLs и конфигурации различных серверов
+- Потеря времени на перезапуск development server при смене среды
+
+**🔐 Управление авторизацией**
+
+- Повторная авторизация при каждой смене сервера
+- Истечение сессий в процессе разработки
+- Необходимость хранения и управления множественными учетными данными
+
+**👥 Командная работа**
+
+- Различные конфигурации у разных разработчиков
+- Отсутствие стандартизации настроек проекта
+- Сложность onboarding новых участников команды
+
+**🛠️ Maintenance overhead**
+
+- Поддержка актуальности прокси настроек
+- Синхронизация изменений в конфигурациях
+- Отладка проблем с подключением к серверам
+
+### Решение
+
+ProxySwither предоставляет:
+
+- **Единую точку конфигурации** всех backend серверов в проекте
+- **Автоматическую авторизацию** с кешированием сессий
+- **Мгновенное переключение** между серверами через UI
+- **Командную синхронизацию** настроек через общий конфиг файл
+
+## Быстрый старт
+
+### Установка
+
+```bash
+npm install @sber-uvz/proxy-switcher
+```
+
+### Минимальная настройка
+
+1. **Создайте конфигурационный файл** `ps.config.ts` в корне проекта:
+
+```typescript
+import { PsConfig } from "@sber-uvz/proxy-switcher";
+
+export default {
+  headerKeyPrefix: "x-ps",
+  servers: {
+    development: {
+      path: "/api",
+      target: "https://dev.internal.company.com",
+      cookieKeys: ["SESSION_ID", "CSRF_TOKEN"],
+      users: [{ username: "dev.user", password: btoa("dev-password") }],
+    },
+    staging: {
+      path: "/api",
+      target: "https://staging.internal.company.com",
+      cookieKeys: ["SESSION_ID", "CSRF_TOKEN"],
+      users: [{ username: "test.user", password: btoa("test-password") }],
+    },
+  },
+} satisfies PsConfig;
+```
+
+2. **Интегрируйте в Vite проект**:
+
+```typescript
+// vite.config.ts
+import { defineConfig } from "vite";
+import { ViteDevServerPsPlugin } from "@sber-uvz/proxy-switcher/vite";
+
+export default defineConfig({
+  plugins: [
+    ViteDevServerPsPlugin(),
+    // другие плагины
+  ],
+});
+```
+
+3. **Добавьте в основной файл приложения**:
+
+```typescript
+// main.tsx
+import { createRootPs } from "@sber-uvz/proxy-switcher/ui";
+
+const container = document.getElementById("root")!;
+const root = createRootPs(container);
+
+root.render(<App />);
+```
+
+4. **Запустите проект**:
+
+```bash
+npm run dev
+```
+
+В правом нижнем углу появится кнопка ProxySwither для управления серверами.
+
+## Конфигурация
+
+Файл `ps.config.ts` является центральной точкой настройки всех серверов и пользователей.
+
+### Структура конфигурации
+
+```typescript
+interface PsConfig {
+  headerKeyPrefix?: string; // Префикс для HTTP заголовков
+  servers: Record<string, ServerConfig>;
+}
+
+interface ServerConfig {
+  path: string; // Маска пути для проксирования
+  target: string; // URL целевого сервера
+  healthCheckPath?: string; // Путь для проверки доступности
+  cookieKeys: string[]; // Ключи cookie для авторизации
+  users: UserConfig[]; // Список пользователей
+}
+
+interface UserConfig {
+  username: string; // Имя пользователя
+  password: string; // Пароль в base64
+}
+```
+
+### Примеры конфигураций
+
+**Множественные среды:**
+
+```typescript
+export default {
+  servers: {
+    local: {
+      path: "/api",
+      target: "http://localhost:8080",
+      cookieKeys: ["sessionId"],
+      users: [{ username: "admin", password: btoa("admin123") }],
+    },
+    development: {
+      path: "/api",
+      target: "https://api-dev.company.com",
+      healthCheckPath: "/health",
+      cookieKeys: ["SESSION_ID", "XSRF-TOKEN"],
+      users: [
+        { username: "dev.frontend", password: btoa("dev-pass") },
+        { username: "dev.tester", password: btoa("test-pass") },
+      ],
+    },
+    production: {
+      path: "/api",
+      target: "https://api.company.com",
+      cookieKeys: ["SESSION_ID", "XSRF-TOKEN"],
+      users: [{ username: "readonly.user", password: btoa("readonly-pass") }],
+    },
+  },
+} satisfies PsConfig;
+```
+
+**Микросервисная архитектура:**
+
+```typescript
+export default {
+  servers: {
+    userService: {
+      path: "/api/users",
+      target: "https://user-service.internal.com",
+      cookieKeys: ["AUTH_TOKEN"],
+      users: [{ username: "service.user", password: btoa("service-pass") }],
+    },
+    orderService: {
+      path: "/api/orders",
+      target: "https://order-service.internal.com",
+      cookieKeys: ["AUTH_TOKEN"],
+      users: [{ username: "service.user", password: btoa("service-pass") }],
+    },
+  },
+} satisfies PsConfig;
+```
+
+### Безопасность конфигурации
+
+- **Пароли в base64**: Используйте `btoa()` для кодирования паролей
+- **Переменные окружения**: Рекомендуется выносить чувствительные данные в `.env`
+- **Gitignore**: Добавьте `ps.config.local.ts` в `.gitignore` для локальных настроек
+
+```typescript
+// ps.config.ts - общий для команды
+export default {
+  servers: {
+    development: {
+      // ... конфигурация
+      users: [
+        {
+          username: process.env.DEV_USERNAME || "default.user",
+          password: btoa(process.env.DEV_PASSWORD || "default-pass"),
+        },
+      ],
+    },
+  },
+} satisfies PsConfig;
+```
+
+## Использование
+
+### Интеграция с различными frontend фреймворками
+
+**React (Vite):**
+
+```typescript
+// vite.config.ts
+import { ViteDevServerPsPlugin } from "@sber-uvz/proxy-switcher/vite";
+
+export default defineConfig({
+  plugins: [react(), ViteDevServerPsPlugin()],
+});
+
+// main.tsx
+import { createRootPs } from "@sber-uvz/proxy-switcher/ui";
+const root = createRootPs(document.getElementById("root")!);
+root.render(<App />);
+```
+
+**React (стандартная интеграция):**
+
+```typescript
+// App.tsx
+import { PsProvider, Layout } from "@sber-uvz/proxy-switcher/ui";
+
+function App() {
+  return (
+    <PsProvider>
+      <Layout>
+        <YourApplication />
+      </Layout>
+    </PsProvider>
+  );
+}
+```
+
+### Workflow разработки
+
+**1. Первоначальная настройка:**
+
+- Создайте `ps.config.ts` с серверами команды
+- Запустите проект с ProxySwither плагином
+- Авторизуйтесь на нужном сервере через UI
+
+**2. Ежедневная работа:**
+
+- Переключайтесь между серверами через кнопку в UI
+- Сессии автоматически сохраняются и обновляются
+- При истечении авторизации получите уведомление
+
+**3. Командная синхронизация:**
+
+- Изменения в `ps.config.ts` автоматически применяются
+- Новые серверы доступны всей команде
+- Стандартизированные настройки для всех разработчиков
+
+### Особенности работы
+
+**Автоматическая авторизация:**
+
+```typescript
+// Система автоматически:
+// 1. Отправляет форму авторизации
+// 2. Извлекает необходимые cookie
+// 3. Сохраняет сессию в localStorage
+// 4. Применяет cookie ко всем API запросам
+```
+
+**Проксирование запросов:**
+
+```typescript
+// Ваш код остается неизменным:
+fetch("/api/users"); // Автоматически проксируется на выбранный сервер
+
+// Под капотом превращается в:
+fetch("https://selected-server.com/api/users", {
+  headers: { Cookie: "SESSION_ID=abc123; CSRF_TOKEN=xyz789" },
+});
+```
+
+**Health checking:**
+
+- Автоматическая проверка доступности серверов
+- Уведомления о недоступных серверах
+- Возможность ручной проверки через UI
+
+## API Reference
+
+### Хуки
+
+**usePs()**
+
+```typescript
+interface PsContextInterface {
+  opened: boolean; // Состояние UI панели
+  setOpened: (open: boolean) => void; // Управление UI панелью
+  servers: ProxySession[]; // Список активных сессий
+  state: "pending" | ServerStatus; // Текущий статус системы
+  cfg: PsConfig | undefined; // Загруженная конфигурация
+  setValue: (session: Partial<ProxySession>) => void; // Обновление сессии
+}
+
+// Использование:
+const { servers, state, setValue } = usePs();
+```
+
+**useAuth()**
+
+```typescript
+interface AuthHook {
+  auth: (server: string, username: string) => () => Promise<void>;
+  loading: boolean;
+}
+
+// Использование:
+const { auth, loading } = useAuth();
+await auth("development", "dev.user")();
+```
+
+**useCfg()**
+
+```typescript
+interface CfgHook {
+  cfg: PsConfig | undefined;
+  loading: boolean;
+  error: string | undefined;
+}
+
+// Использование:
+const { cfg, loading } = useCfg();
+```
+
+### Типы
+
+**ProxySession:**
+
+```typescript
+interface ProxySession {
+  id: string; // Уникальный идентификатор сессии
+  server: string; // Название сервера из конфига
+  username: string; // Имя пользователя
+  cookie: string; // Сохраненные cookie
+  picked?: boolean; // Активна ли сессия
+  setAt?: string; // Время создания сессии
+  available?: boolean; // Доступность сервера
+  autoConnect?: boolean; // Автоподключение при старте
+}
+```
+
+**ServerStatus:**
+
+```typescript
+type ServerStatus =
+  | "online" // Сервер доступен и авторизован
+  | "unauthorized" // Сервер доступен, нужна авторизация
+  | "error" // Сервер недоступен
+  | "neutral"; // Нет активного сервера
+```
+
+### Компоненты
+
+**PsProvider:**
+
+```typescript
+// Корневой провайдер состояния
+<PsProvider>
+  <YourApp />
+</PsProvider>
+```
+
+**Layout:**
+
+```typescript
+// Компонент с UI кнопкой и панелью управления
+<Layout>
+  <YourApp />
+</Layout>
+```
+
+### Утилиты
+
+**Server Health Check:**
+
+```typescript
+import { checkServerHealth } from "@sber-uvz/proxy-switcher/core";
+
+const result = await checkServerHealth({
+  serverName: "development",
+  targetUrl: "https://dev.company.com",
+  healthCheckPath: "/health",
+});
+
+// result: { available: boolean, status?: number, responseTime?: number }
+```
+
+**Config Management:**
+
+```typescript
+import { configLoader } from "@sber-uvz/proxy-switcher/core";
+
+// Только в Node.js окружении
+const config = await configLoader();
+configLoader.invalidateCache(); // Сброс кеша
+```
+
+### События и уведомления
+
+**Notification System:**
+
+```typescript
+const { showNotification } = useNotification();
+
+showNotification("success", "Операция выполнена успешно", 3000);
+showNotification("error", "Произошла ошибка", 5000);
+showNotification("warning", "Внимание: сессия истекает", 4000);
+showNotification("info", "Информационное сообщение", 2000);
+```
+
+---
+
+## Поддержка и сообщество
+
+**Требования:**
+
+- Node.js 16+
+- Vite 4+ (рекомендуется)
+- Modern browsers с поддержкой ES2020
+
+**Совместимость:**
+
+- ✅ React 17+
+- ✅ TypeScript 4.5+
+- ✅ Vite 4+
+
+Для вопросов и предложений используйте внутренние каналы разработки или создайте issue в репозитории.
